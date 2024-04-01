@@ -16,7 +16,7 @@ subtracao(200, 100)
 //chamando o modulo de divisão.
 const divisao = meuModulo.divisao
 divisao(200, 2)
-
+  
 //chamando o modulo de multiplicação.
 const multiplicacao = meuModulo.multiplicacao
 multiplicacao(50, 2)
