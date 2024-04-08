@@ -1,7 +1,5 @@
-const { userInfo, tmpdir } = require('node:os')
 const os = require('node:os')
-const { brotliCompress } = require('node:zlib')
-const { buffer } = require('stream/consumers')
+
 
 //Atividade01:
 // console.log(os.type())
