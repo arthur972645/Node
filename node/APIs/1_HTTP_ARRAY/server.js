@@ -15,7 +15,7 @@ http://localhost:3333/user/1
 import http from 'node:http'
 
 //Definindo para a variavel PORT, qual sera a porta em que o servidor vai ser executado 
-const PORT = 3333
+const PORT = 3000
 
 //array que será usado para guardar os dados dos usuarios
 const users = []
@@ -35,11 +35,25 @@ const server = http.createServer((request, response) => {
         response.end(JSON.stringify(users))
     }
     
-   
-    else if(false){//buscar um uniico usuasrio
-     //Aqui vaos adicionar um novo usuario, para isso é feito uma validação para saber se vai ser adicionado no caminho /users e se o metodo utulizado para adcionar - é o POST, caso for, vai se feita a logica para adionar um novo usuario
+    //O url.startsWith vai pegar o valor do /user/ 'essa parte aqui ele vai pegar', ou seja ele vai pegar o id, se estiver pedindo o id pelo metodo get, ai ele executa o que ta dentro do if
+    else if(url.startsWith('/users/') && method === 'GET'){//Buscar único usuários
+        
+        const usersId = url.split('/')[2]
+        const user= users.find((user) => user.id == usersId)
+        
+        if(user){
+            response.setHeader("Content-Type","application/json")
+            response.end(JSON.stringify(user))
+        }else{
+            response.writeHead(404, {"Content-Type":"application/json"})
+            response.end(JSON.stringify({message: "Usuario não encontrado"}))
+        }
+    }
+     
+    //Aqui vaos adicionar um novo usuario, para isso é feito uma validação para saber se vai ser adicionado no caminho /users e se o metodo utulizado para adcionar - é o POST, caso for, vai se feita a logica para adionar um novo usuario
      //vai verificar se ta adcionado no users
-    }else if (url === '/users' && method === "POST"){ //cadastrando um usuario
+    else if (url === '/users' && method === "POST"){ //cadastrando um usuario
+        
         //vai servir para armazenar os dados que estão sendo enviado pro corpo da solicitação, ou seja, os usuarios
         let boby = ''
         //vai ser envaido dados, essa função vai ler os dados e converter do tipo shunk para sting e anexar no body
@@ -50,18 +64,65 @@ const server = http.createServer((request, response) => {
         request.on('end',() => {
             //estamos convertendo os dadso recebidos do body para objeto js, ataves do JSON.parse()
             const novoUsuario = JSON.parse(boby)
-            novoUsuario.id = '1'
+            novoUsuario.id = users.length + 1
             //adicoando o novoUsuario para o array users
             users.push(novoUsuario)
 
             //idicar que o recurso foi criado com sucesso e é um objeto JSON
             response.writeHead(201, {'Content-Type' : 'application/json'})
             //enviando a resposta a resposta de volta ao cliente, onde a gente converte o novo usuario que está como objeto Json e enviamos pro corpo da resposta
+           //o response.end é importante para para finalizar, se não fica dendo erro
             response.end(JSON.stringify(novoUsuario))
         })
     } 
-})
 
-server.listen(PORT, () => {
+    else if(url.startsWith("/users/") && method === "PUT"){//Atualizar um usuário 
+        const usersId = url.split("/")[2]
+
+        let body = "";
+        request.on("data", (chunk) => {
+            body += chunk.toString();
+        });
+        request.on('end', ()=> {
+            const uptadeUser = JSON.parse(body)
+            const index = users.findIndex((user)=> user.id == usersId)
+            if(index !== -1){
+                //atualizar
+                users[index] = {...users[index], uptadeUser}
+                response.setHeader('Content-Type', 'application/json')
+                response.end(JSON.stringify(users[index]))
+            }else{
+                //retornar erro
+                response.writeHead(404, {"Content-Type": "application/json"});
+                response.end(JSON.stringify({message: "Erro ao tentar atualizar!"}))
+            }
+        })
+    } 
+    
+    else if(url.startsWith("/users/") && method === "DELETE"){ //Deletar usuario
+        const userId = url.split("/")[2]
+        const index = users.findIndex((user) => user.id == userId)
+        
+        if(index !== -1){ //Usuario encontrado entao deleta
+            users.splice(index, 1)
+            response.setHeader("Content-Type","appcation/json")
+            response.end(JSON.stringify({message: "Usuario excluido"}))
+        } else { //Ususario não entrado retorna erro
+            response.writeHead(404, {"Content-Type" : "application/json"})
+            response.end(JSON.stringify({message:"Usuario nao encontrado"}))
+        }
+    }
+    else{
+        response.writeHead(404, {"Content-Type": "application/json"})
+        response.end(JSON.stringify({message: "Recurso não encontrado"}))
+    }
+
+
+
+
+
+
+
+}).listen(PORT, () => {
     console.log(`Servidor on PORT: ${PORT}`)
 })
