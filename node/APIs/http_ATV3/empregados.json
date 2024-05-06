@@ -1,0 +1,12 @@
+[
+  {
+    "nome": "queijo",
+    "caregoria": "gelato",
+    "ingredientes": [
+      "LETE",
+      "VACA",
+      "MORANGO"
+    ],
+    "id": 1
+  }
+]

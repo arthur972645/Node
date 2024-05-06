@@ -1,10 +1,10 @@
 import http from 'node:http'
-import fs, { fdatasync } from 'node:fs'
-import http from 'node:http';
 import fs from 'node:fs';
-import {URLSearchParams} from 'node:url';
+import lerDadosFuncionarios from './Funcionarios.js'
+import cadastrarNovoFuncionario from './cadastrarNovoUsuario.js'
 
 const PORT = 3333
+
 
 const server = http.createServer((request, response) => {
     const {method, url} = request
@@ -27,20 +27,24 @@ const server = http.createServer((request, response) => {
         }catch(error){
             console.error('Erro ao ler o arquivo jsonData'+error)
         }
+        
+        
         if(url === '/empregados' && method === "GET"){ // listar todos os funcionários cadastrados
-            fs.readFile('empregados.json', 'utf8', (err, data) => {
-                if(err){
-                    response.writeHead(500, {'Content-Type':'application/json'})
-                    response.end(JSON.stringify({message: 'Erro ao buscar os dados'}))
-                    return; 
+            lerDadosFuncionarios((err, funcionario) => {
+                if(err) {
+                    response.writeHead(500, {'Contet-Type':'application/json'})
+                    response.end(JSON.stringify({message: 'Erro ao ler o arquivo'}))
                 }
-                const jsonData = JSON.parse(data)
-                response.writeHead(200, {'Content-Type':'application/json'})
-                response.end(JSON.stringify(jsonData))
+                response.writeHead(200, {'Contet-Type':'application/json'})
+                response.end(JSON.stringify(funcionario))
             })
-        }else if(url === '/empregados/count' && method === "GET"){ // contar o número total de funcionários cadastrados
-            fs.readFile('empregados.json', 'utf8', (err, data) => {
-                if(err){
+        }
+        
+        
+        
+        else if(url === '/empregados/count' && method === "GET"){ // contar o número total de funcionários cadastrados
+            lerDadosFuncionarios((err, funcionario) => {
+                if(err) {
                     response.writeHead(500, {'Contet-Type':'application/json'})
                     response.end(JSON.stringify({message: 'Erro ao ler o arquivo'}))
                 }
@@ -48,25 +52,28 @@ const server = http.createServer((request, response) => {
                 const totalEmpregados = jsonData.length
 
                 response.writeHead(200, {'Content-Type':'application/json'})
-                response.end(JSON.stringify({message: `Total de empregados é ${totalEmpregados}`}))
+                response.end(JSON.stringify(totalEmpregados, funcionario))
             })
-        }else if(url.startsWith('/empregados/porCargo/') && method === "GET"){ // listar todos os funcionários de um determinado cargo
+        }
+        
+        
+        
+        
+        else if(url.startsWith('/empregados/porCargo/') && method === "GET"){ // listar todos os funcionários de um determinado cargo
         //localhost:3333/empregados/porCargo/dev
             const cargo = url.split('/')[3]
-
-            fs.readFile('empregados.json', 'utf8', (err, data)=>{
-                if(err){
-                    response.writeHead(500,{"Content-Type" : "application/json"})
-                    response.end(JSON.stringify({message: "Funcionário não encontrado"}))
+            lerDadosFuncionarios((err, funcionario) => {
+                if(err) {
+                    response.writeHead(500, {'Contet-Type':'application/json'})
+                    response.end(JSON.stringify({message: 'Funcionario nao encontrado'}))
                 }
-
                 const jsonData = JSON.parse(data);
 
                 const funcionarioPorCargo = jsonData.filter((funcionario)=> funcionario.cargo === cargo);
 
                 if(funcionarioPorCargo.length === 0){
                     response.writeHead(404, {'Content-Type': 'application/json'})
-                    response.end(JSON.stringify({message: 'Funcionario não encontrado'}))
+                    response.end(JSON.stringify(funcionario))
                     return
                 }
                 
@@ -76,13 +83,18 @@ const server = http.createServer((request, response) => {
             
             response.end(cargo)
 
-        }else if(url.startsWith('/empregados/porHabilidade/') && method === "GET"){ // listar todos os funcionários que possuam uma determinada habilidade
+        }
+        
+        
+        
+        
+        else if(url.startsWith('/empregados/porHabilidade/') && method === "GET"){ // listar todos os funcionários que possuam uma determinada habilidade
             const habilidade = url.split('/')[3]
 
-            fs.readFile('empregados.json', 'utf8', (err, data)=>{
-                if(err){
-                    response.writeHead(500,{"Content-Type" : "application/json"})
-                    response.end(JSON.stringify({message: "Funcionário não encontrado"}))
+            lerDadosFuncionarios((err, funcionario) => {
+                if(err) {
+                    response.writeHead(500, {'Contet-Type':'application/json'})
+                    response.end(JSON.stringify({message: 'Erro ao ler o arquivo'}))
                 }
 
                 const jsonData = JSON.parse(data);
@@ -92,7 +104,7 @@ const server = http.createServer((request, response) => {
                 )
                 if(funcionarioPorHabilidade.length === 0){
                     response.writeHead(404, {'Content-Type': 'application/json'})
-                    response.end(JSON.stringify({message: 'Não existe funcinário com tal habilidade'}))
+                    response.end(JSON.stringify(funcionario))
                     return;
                 }
                 response.writeHead(200, {'Content-Type': 'application/json'})
@@ -102,7 +114,11 @@ const server = http.createServer((request, response) => {
             //console.log('GET /empregados/porHabilidade/{habilidade}')
             response.end()
 
-        }else if(url.startsWith('/empregados/porFaixaSalarial') && method === "GET"){ // listar todos os funcionários dentro de uma faixa salarial especificada
+        }
+        
+        
+        
+        else if(url.startsWith('/empregados/porFaixaSalarial') && method === "GET"){ // listar todos os funcionários dentro de uma faixa salarial especificada
             /*Requisições
                 boby -> JSON -> POST
                 ROUTE PARAM -> porHabilidade/ValorEnviado -> PUT, DELETE, PATH, GET
@@ -114,10 +130,10 @@ const server = http.createServer((request, response) => {
             const maxSalario = urlParams.get('maxSalario')
             console.log(minSalario, maxSalario)
 
-            fs.readFile('empregados.json', 'utf8', (err, data)=>{
-                if(err){
-                    response.writeHead(500,{"Content-Type" : "application/json"})
-                    response.end(JSON.stringify({message: "Funcionário não encontrado"}))
+            lerDadosFuncionarios((err, funcionario) => {
+                if(err) {
+                    response.writeHead(500, {'Contet-Type':'application/json'})
+                    response.end(JSON.stringify({message: 'Erro ao ler o arquivo'}))
                 }
 
                 const jsonData = JSON.parse(data);
@@ -126,7 +142,7 @@ const server = http.createServer((request, response) => {
 
                 if(funcionarioPorFaixaSalarial.length === 0){
                     response.writeHead(404, {'Content-Type': 'application/json'})
-                    response.end(JSON.stringify({message: 'Não existe funcioário com essa faixa salarial'}))
+                    response.end(JSON.stringify(funcionario))
                     return;
                 }
                 response.writeHead(200, {'Content-Type': 'application/json'})
@@ -137,10 +153,15 @@ const server = http.createServer((request, response) => {
             //console.log('GET /empregados/porFaixaSalarial?min={min}&max={max}')
             
 
-        }else if(url.startsWith('/empregados/') && method === "GET"){ // detalhes de um funcionário específico com base em seu ID
+        }
+        
+        
+        
+        
+        else if(url.startsWith('/empregados/') && method === "GET"){ // detalhes de um funcionário específico com base em seu ID
             const id = parseInt(url.split('/')[2])
-            fs.readFile('empregados.json', 'utf8', (err) => {
-                if(err){
+            lerDadosFuncionarios((err, funcionario) => {
+                if(err) {
                     response.writeHead(500, {'Contet-Type':'application/json'})
                     response.end(JSON.stringify({message: 'Erro ao ler o arquivo'}))
                 }
@@ -149,34 +170,40 @@ const server = http.createServer((request, response) => {
 
                 if(indexEmpregado === -1){
                     response.writeHead(404, {'Content-Type':'application/json'})
-                    response.end(JSON.stringify({message: 'Usuário não encontrado'}))
+                    response.end(JSON.stringify(funcionario))
                     return
                 }
                 const empregadoEncontrado = jsonData[indexEmpregado]
                 response.writeHead(200, {'Content-Type':'application/json'})
                 response.end(JSON.stringify(empregadoEncontrado))
             })
-        }else if(url === '/empregados' && method === "POST"){ // cadastrar um novo funcionário
-            let body = ''
+        }
+        
+        else if(url === '/empregados' && method === "POST"){ // cadastrar um novo funcionário
+            let body = '';
             request.on('data', (chunk) => {
-                body += chunk
-            })
+                body += chunk;
+            });
             request.on('end', () => {
-                const novoEmpregado = JSON.parse(body)
-                novoEmpregado.id = jsonData.length + 1
-                jsonData.push(novoEmpregado)
-
-                fs.writeFile("empregados.json", JSON.stringify(jsonData, null, 2), (err) => {
-                    if(err){
-                        response.writeHead(500, {'Content-Type':'application/json'})
-                        response.end(JSON.stringify({message: 'Erro interno no servidor'}))
-                        return
+                const novoEmpregado = JSON.parse(body);
+    
+                cadastrarNovoFuncionario(novoEmpregado, (err, funcionarioCadastrado) => {
+                    if (err) {
+                        response.writeHead(500, { 'Content-Type': 'application/json' });
+                        response.end(JSON.stringify({ message: 'Erro interno no servidor' }));
+                        return;
                     }
-                    response.writeHead(201, {'Content-Type':'application/json'})
-                    response.end(JSON.stringify(novoEmpregado))
-                })
-        })
-        }else if(url.startsWith('/empregados/') && method === "PUT"){ // atualizar as informações de um funcionário específico com base em seu ID
+                    response.writeHead(201, { 'Content-Type': 'application/json' });
+                    response.end(JSON.stringify(funcionarioCadastrado));
+                });
+            });
+        }
+        
+        
+        
+        
+        
+        else if(url.startsWith('/empregados/') && method === "PUT"){ // atualizar as informações de um funcionário específico com base em seu ID
             const id = parseInt(url.split('/')[2])
 
             let body = ''
@@ -214,7 +241,14 @@ const server = http.createServer((request, response) => {
             })
         })
             response.end()
-        }else if(url.startsWith('/empregados/') && method === "DELETE"){ // excluir um funcionário específico com base em seu ID
+        }
+        
+        
+        
+        
+        
+        
+        else if(url.startsWith('/empregados/') && method === "DELETE"){ // excluir um funcionário específico com base em seu ID
             const id = parseInt(url.split('/')[2])
             fs.readFile('empregados.json', 'utf8', (err, data) => {
                 if(err){
