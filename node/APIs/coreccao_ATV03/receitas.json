@@ -1,56 +1,5 @@
 [
   {
-    "nome": "Lasanha",
-    "categoria": "paratos principais",
-    "ingredientes": [
-      "200g de arroz arbóreo",
-      "50g de funghi secchi",
-      "1 cebola picada",
-      "2 dentes de alho picados",
-      "100ml de vinho branco seco",
-      "1 litro de caldo de legumes",
-      "50g de manteiga",
-      "Queijo parmesão ralado a gosto",
-      "Sal e pimenta a gosto"
-    ],
-    "modo_preparo": "Faça do jeito que o seu ocração mandar!!",
-    "id": 1
-  },
-  {
-    "nome": "Gelato",
-    "categoria": "paratos principais",
-    "ingredientes": [
-      "200g de arroz arbóreo",
-      "50g de funghi secchi",
-      "1 cebola picada",
-      "2 dentes de alho picados",
-      "100ml de vinho branco seco",
-      "1 litro de caldo de legumes",
-      "50g de manteiga",
-      "Queijo parmesão ralado a gosto",
-      "Sal e pimenta a gosto"
-    ],
-    "modo_preparo": "Faça do jeito que o seu ocração mandar!!",
-    "id": 2
-  },
-  {
-    "nome": "Gelato",
-    "categoria": "paratos principais",
-    "ingredientes": [
-      "200g de arroz arbóreo",
-      "50g de funghi secchi",
-      "1 cebola picada",
-      "2 dentes de alho picados",
-      "100ml de vinho branco seco",
-      "1 litro de caldo de legumes",
-      "50g de manteiga",
-      "Queijo parmesão ralado a gosto",
-      "Sal e pimenta a gosto"
-    ],
-    "modo_preparo": "Faça do jeito que o seu ocração mandar!!",
-    "id": 3
-  },
-  {
     "nome": "torta de limão",
     "categoria": "paratos principais",
     "ingredientes": [
@@ -65,6 +14,6 @@
       "Sal e pimenta a gosto"
     ],
     "modo_preparo": "Faça do jeito que o seu ocração mandar!!",
-    "id": 4
+    "id": 2
   }
 ]

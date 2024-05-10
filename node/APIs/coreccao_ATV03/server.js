@@ -8,12 +8,15 @@ import { deepStrictEqual } from 'node:assert'
 
 const PORT = 3333
 
+//COMANDOS BASICOS EM UMA CONSTRUÇÃO DA API(CLUD):
+// C - CREAT
+// R - REPLACE
 
 
 const server = createServer((request, response)=>{
     const {method, url} = request
 
-
+    //LISTAR
     if(method === 'GET' && url === '/receitas'){
         lerDadosReceitas((err, receitas) => {
             if(err){
@@ -26,6 +29,7 @@ const server = createServer((request, response)=>{
         })
        
     }
+    //ADICIONAR
     else if(method === 'POST' && url === '/receitas'){
    
         let body = ''
@@ -66,6 +70,7 @@ const server = createServer((request, response)=>{
             })
         })
     }
+    //ATAULIZAR
     else if(method === 'PUT' && url.startsWith ('/receitas/')){    
         const id = parseInt(url.split('/')[2])
         let body = ''
@@ -113,9 +118,39 @@ const server = createServer((request, response)=>{
 
         })
     }
-
+    //DELETAR
     else if(method === 'DELETE' && url.startsWith ('/receitas/')){
-        response.end(method)
+        const id = parseInt(url.split('/') [2])
+        lerDadosReceitas((err, receitas) =>{
+            //aqui é o problema de servidor
+            if(err) {
+                response.writeHead(500, {'Contenr-Type' : 'application/json'})
+                response.end(JSON.stringify({message: 'Erro ao ler dados'}))
+                return //serve para parar a execução 
+            }
+            //findindex  funciona como se fosse um for, ele vai procurar o indece, o id da receita que seja deletada
+            const indexReceitas = receitas.findIndex((receitas) => receitas.id)
+            //Aqui é o erro do usuario
+            if(indexReceitas == -1){
+                response.writeHead(404, {'Contenr-Type' : 'application/json'})
+                response.end(JSON.stringify({message: 'Receita não encontrada'}))
+                return //serve para parar a execução 
+            }
+            //Parte que vai deletar a receita, antes era so erro
+            //O splice() vai remover elementos
+            receitas.splice(indexReceitas, 1)
+            //wriFile serve para escrever as informações no arquivo.json
+            fs.writeFile("receitas.json",JSON.stringify(receitas, null, 2),(err) => {
+                if(err){
+                    response.writeHead(500, {'Contenr-Type' : 'application/json'})
+                    response.end(JSON.stringify({message: 'Erro ao deletar receita do Banco de Dados'}))
+                    return
+                }
+                response.writeHead(200, {"Content-Type" :"application/json"})
+                response.end(JSON.stringify({message:'Receita excluida'}))
+            })
+        })
+
     }
     else if(method === 'GET' && url.startsWith ('/receitas')){
         response.end(method)
