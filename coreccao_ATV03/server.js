@@ -162,11 +162,11 @@ const server = createServer((request, response)=>{
             }
             const indexReceita = receitas.findIndex((receitas) => receitas.id === id)
             if(indexReceita == -1){
-                response.writeHead(404, {'Contenr-Type' : 'application/json'})
+                response.writeHead(404, {'Content-Type' : 'application/json'})
                 response.end(JSON.stringify({message: 'Receita não encontrada'}))
                 return //serve para parar a execução 
             }
-            const receitaEncontrada = receita[indexReceita]
+            const receitaEncontrada = receitas[indexReceita]
             response.writeHead(200, {'Content-Type':'application/json'})
             response.end(JSON.stringify(receitaEncontrada))
         })
