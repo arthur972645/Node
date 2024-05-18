@@ -66,6 +66,7 @@ const serve = createServer((request, response) => {
                     console.log(novoUsuario)
                     return
                 }
+                else if(novoUsuario)
                 novoUsuario.id = usuario.length + 1
                 usuario.push(novoUsuario)
 
@@ -76,14 +77,16 @@ const serve = createServer((request, response) => {
                         return
                         
                     }
-                    if(novoUsuario.Email === novoUsuario.ConfirmarEmail){
-                        response.writeHead(404,{'Content-Type':'application/json'})
-                        response.end(JSON.stringify({message:'Erro ao cadastrar a usuario, EMAIL igual'}))
-                        return
-                    } else{
-                        response.writeHead(201,{'Content-Type':"application/json"})
-                        response.end(JSON.stringify(novoUsuario))
-                    }
+                    // if(novoUsuario.Email === novoUsuario.Email){
+                    //     response.writeHead(404,{'Content-Type':'application/json'})
+                    //     response.end(JSON.stringify({message:'Erro ao cadastrar a usuario, EMAIL igual'}))
+                    //     return
+                    // } else{
+                    //     response.writeHead(201,{'Content-Type':"application/json"})
+                    //     response.end(JSON.stringify(novoUsuario))
+                    // }
+                    response.writeHead(201,{'Content-Type':"application/json"})
+                    response.end(JSON.stringify(novoUsuario))
                 })
                 
                 
