@@ -60,7 +60,7 @@ const server = createServer((request, response)=>{
                     response.end(JSON.stringify({message:'Erro ao cadastrar a receita'}))
                     return //sempre colocar para encerraar e execução
                 }
-                //define o novo id da receita, antes dela ser adicionada, lembre-se que o 'receitas' é equivalente a tudo que ta no arquivo json, é um array 
+                //define o novo id da receita, antes dela ser adicionada    , lembre-se que o 'receitas' é equivalente a tudo que ta no arquivo json, é um array 
                 novaReceita.id = receitas.length + 1
                 receitas.push(novaReceita)//adicionamos a nova receita ao array receitas
                 console.log(receitas)
@@ -75,7 +75,7 @@ const server = createServer((request, response)=>{
                 })
                 
                 response.writeHead(201,{'Content-Type':"application/json"}) //Define o cabeçalho da resposta com status 201 (criado) e tipo de conteúdo JSON
-                response.end(JSON.stringify(novaReceita)) // Envia a nova receita como JSON na resposta
+                response.end(JSON.stringify(novaRecta)) // Envia a nova receita como JSON na resposta
                 
             })
         })
@@ -96,7 +96,7 @@ const server = createServer((request, response)=>{
                 response.end(JSON.stringify({message: 'Corpo da solicitação está vazio'}))
                 return
             }
-            lerDadosReceitas((err, receitas)=>{//chama a função que ta mexendo diretamente com o aquivo.json e ler ela e verifica de aparaceu algum erro ou nao
+            lerDadosReceitas((err, reeiceitas)=>{//chama a função que ta mexendo diretamente com o aquivo.json e ler ela e verifica de aparaceu algum erro ou nao
                 if(err){
                     response.writeHead(500, {'Content-Type':'application/json'})
                     response.end(JSON.stringify({message: 'Erro ao cadastrar receita'}))
